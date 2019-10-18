@@ -4,12 +4,11 @@ const keys = require("./keys.js")
 const moment = require('moment')
 const axios = require('axios')
 const fs = require('fs')
-// const spotify = new Spotify(keys.spotify)
+const Spotify = require('node-spotify-api')
+const spotify = new Spotify(keys.spotify)
 
 let command = process.argv[2]
 
-
-// Make it so liri.js can take in one of the following commands:
 //   * `concert-this`
 const concertThis = _ => {
   artists = process.argv[3]
@@ -22,30 +21,52 @@ const concertThis = _ => {
           console.log(`
           Venue: ${venue.name}
           Location : ${venue.city}, ${venue.country}
-          Date: ${datetime}
-          
+          Date: ${moment(datetime).format("MM / DD / YYYY")}
           `)
         })
       }
-      // console.log(data)
     })
-    // * Name of the venue
-    //   * Venue location
-    //     * Date of the Event(use moment to format this as "MM/DD/YYYY")
     .catch(e => console.log(e))
 }
+
+const spotifyThis =_=>{
+  songTitle = process.argv[3]
+  spotify.search ({ type: 'track' , query:`${songTitle}`, limit: 3 })
+  .then(({tracks: {items}}) =>{
+    if(items.length === 0){
+      console.log('Nothing here')
+    }else {
+  console.log(items[0])
+  console.log(`
+      Artist(s): ${items[0].artists[0].name}
+      Track Name: ${items[0].name}
+      Preview Song: ${items[0].preview_url}
+      Album: ${items[0].album.name}
+  `)
+
+
+      
+    }
+  })
+
+  // * If no song is provided then your program will default to "The Sign" by Ace of Base.
+
+
+}
+
 
 
 switch (command) {
   case 'concert-this':
     concertThis()
     break
+
+  case 'spotify':
+    spotifyThis()
+    break
 }
 
 //   * `spotify-this-song`
-
-// axios.get(``)
-// .then(song =>{
 
 //     //  * Artist(s)
 
@@ -56,8 +77,6 @@ switch (command) {
 //     //     * The album that the song is from
 
 //     //       * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
-// })
 // //   * `movie-this`
 
 // axios.get()
