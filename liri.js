@@ -9,7 +9,7 @@ const spotify = new Spotify(keys.spotify)
 
 let command = process.argv[2]
 
-//   * `concert-this`
+//   Search concert
 const concertThis = _ => {
   artists = process.argv[3]
   axios.get(`https://rest.bandsintown.com/artists/${artists}/events?app_id=codingbootcamp`)
@@ -17,7 +17,7 @@ const concertThis = _ => {
       if (data.length === 0) {
         console.log('This artist is currently not on tour')
       } else {
-        data.forEach(({ venue, datetime}) => {
+        data.forEach(({ venue, datetime }) => {
           console.log(`
           Venue: ${venue.name}
           Location : ${venue.city}, ${venue.country}
@@ -29,34 +29,58 @@ const concertThis = _ => {
     .catch(e => console.log(e))
 }
 
-const spotifyThis =_=>{
+//  Search spotify
+const spotifyThis = _ => {
   songTitle = process.argv[3]
-  spotify.search ({ type: 'track' , query:`${songTitle}`, limit: 3 })
-  .then(({tracks: {items}}) =>{
-    if(items.length === 0){
-      console.log('Nothing here')
-    }else {
-  console.log(items[0])
-  console.log(`
+  spotify.search({ type: 'track', query: `${songTitle}`, limit: 3 })
+    .then(({ tracks: { items } }) => {
+      if (items.length === 0) {
+        console.log('Nothing here')
+        //the sign by ace of base
+      } else {
+        console.log(`
       Artist(s): ${items[0].artists[0].name}
       Track Name: ${items[0].name}
       Preview Song: ${items[0].preview_url}
       Album: ${items[0].album.name}
   `)
-
-
-      
-    }
-  })
-
-  // * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
-
+      }
+    })
 }
 
+//movie this
 
+const movieThis = _ => {
+  movie = process.argv[3]
+  axios.get(`https://www.omdbapi.com/?t=${movie}&apikey=trilogy&`)
+    .then(({ data }) => {
+      if (movie) {
+        console.log(`
+  Title: ${data.Title}
+  Release Year:  ${data.Year}
+  IMBD Rating:  ${data.Ratings[0].Value}
+  Rotten Tomatoes Rating:  ${data.Ratings[1].Value}
+  Country Produced:  ${data.Country}
+  Language:  ${data.Language}
+  Actors:  ${data.Actors}
+  Plot:
+  ${data.Plot}`)
+        //   //    ```
+      } else {
+        axios.get(`https://www.omdbapi.com/?t=Cats&apikey=trilogy&`)
+          .then(({ data }) => {
+            // console.log(data)
+            console.log(
+              `You should watch Cats! Check it out here: https://www.imdb.com/title/${data.imdbID}/`)
+            console.log('It may or not be on Netflix!')
+
+          })
+      }
+    })
+}
 
 switch (command) {
+
   case 'concert-this':
     concertThis()
     break
@@ -64,42 +88,14 @@ switch (command) {
   case 'spotify':
     spotifyThis()
     break
+
+  case 'movie-this':
+    movieThis()
+    break
 }
 
-//   * `spotify-this-song`
 
-//     //  * Artist(s)
 
-//     // * The song's name
-
-//     //   * A preview link of the song from Spotify
-
-//     //     * The album that the song is from
-
-//     //       * If no song is provided then your program will default to "The Sign" by Ace of Base.
-// //   * `movie-this`
-
-// axios.get()
-// .then( movie =>{
-
-//   // ```
-//   //      * Title of the movie.
-//   //      * Year the movie came out.
-//   //      * IMDB Rating of the movie.
-//   //      * Rotten Tomatoes Rating of the movie.
-//   //      * Country where the movie was produced.
-//   //      * Language of the movie.
-//   //      * Plot of the movie.
-//   //      * Actors in the movie.
-//   //    ```
-
-//   //   * If the user doesn't type a movie in, the program will output data for the movie 'Mr.Nobody.'
-
-//   //     * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
-
-//   //       * It's on Netflix!
-
-// })
 
 // //   * `do-what-it-says`
 
